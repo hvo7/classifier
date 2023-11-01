@@ -41,7 +41,7 @@ From a command line interface (terminal, gitbash, cmd, or powershell)
 Clone this Repository (https://github.com/LSU-CGBM/classifier)
 using the following:
 
-`git clone hhttps://github.com/LSU-CGBM/classifier`
+`git clone https://github.com/LSU-CGBM/classifier`
 
 then cd into the directory using:
 
