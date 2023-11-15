@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""
+Script Name: process_trigger.py
+Description: This script make some plots and get information to classify triggers.
+Author: Yuta Kawakubo
+Date: 2023-11-14
+Version: 1.0
+"""
+
 from astropy.table import Table
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,6 +42,17 @@ trigtime_mdc = float(args[3])
 trigid = int(trigtime_mdc)
 
 def get_th_data(data_dir, fileid):
+    """
+        This function loads six TH data files and merge them to one astropy Table.
+
+        Args:
+            data_dir (str): path to the data directory
+            fileid (str): date of the data (yyyymmdd)
+
+        Returns:
+            Table: a table includes six TH data for each detector & gain
+    """
+
     hx1_hth_file = '%s/cgbm_%s_hx1_hth.fits' % (data_dir, fileid)
     hx1_hth_table = Table.read(hx1_hth_file, hdu=1)
     hx2_hth_file = '%s/cgbm_%s_hx2_hth.fits' % (data_dir, fileid)
@@ -47,6 +66,9 @@ def get_th_data(data_dir, fileid):
     sgm_lth_file = '%s/cgbm_%s_sgm_lth.fits' % (data_dir, fileid)
     sgm_lth_table = Table.read(sgm_lth_file, hdu=1)
     merge = Table()
+
+    # Timestamps of CGBM data are end of the bins.
+    # Timestamps were changed to center of the bins
     merge['TIME'] = hx1_hth_table['TIME'] - cg.TH_HBIN
     merge['MDCTIME'] = hx1_hth_table['MDCTIME'] - cg.TH_HBIN
     merge['HXM1_EXPOSURE'] = hx1_hth_table['EXPOSURE']
@@ -106,7 +128,20 @@ def get_th_data(data_dir, fileid):
 
 
 def plt_lc_single_det(th_data, trigid, trigtime_met, det):
-    if det not in ['HXM1', 'HXM2','SGM']:
+    """
+        This function makes plots of TH light curves and save them as png files.
+
+        Args:
+            th_data (table): the table which is an output of get_th_data.
+            trigid (int): integer of the trigger time in MDC time
+            trigtime_met (float): trigger time in MET
+            det (str): detector name (HXM1/HXM2/SGM)
+
+        Returns:
+            None
+    """
+
+    if det not in ['HXM1', 'HXM2', 'SGM']:
         print('%s is not expected value' % det)
         return None
     fig, cv = plt.subplots(8, 1, sharex=True, figsize=(8, 8))
@@ -192,8 +227,20 @@ def plt_lc_single_det(th_data, trigid, trigtime_met, det):
         left=0.15,
         right=0.95)
     plt.show()
+    return None
 
 def plot_orb(data_dir, fileid, trigtime):
+    """
+        This function makes an orbit plot and save them as png files.
+
+        Args:
+            data_dir (str): path to the data directory
+            fileid (str): date of the data (yyyymmdd)
+            trigtime (float): trigger time in MET
+        Returns:
+            None
+    """
+    # mergin is a variable to set the time interval for the track of the pointing direction.
     mergin = 150.0
     orb_file = '%s/cgbm_%s.orb' % (data_dir, fileid)
     orb_table = Table.read(orb_file, hdu=1)
@@ -201,10 +248,11 @@ def plot_orb(data_dir, fileid, trigtime):
     neg_mask = orb_table['LONGITUDE'] > 180
     orb_table['LONGITUDE'][neg_mask] = orb_table['LONGITUDE'][neg_mask] - 360
 
+    # Find the nearest time stamp
     orb_table['abs_diff'] = np.abs(orb_table['TIME'] - trigtime)
     diff_min_index = np.argmin(orb_table['abs_diff'])
 
-
+    # Extracting row within triggertime +/- mergin
     around_mask = (trigtime - mergin <= orb_table['TIME']) & ( orb_table['TIME'] <= trigtime + mergin)
     around = orb_table[around_mask]
 
@@ -234,15 +282,38 @@ def plot_orb(data_dir, fileid, trigtime):
     plt.show()
 
 def met2utc(trigtime_met):
+    """
+        This function get Time in astropy.time from trigger time in MET
+
+        Args:
+            trigtime_met (float): trigger time in MET
+        Returns:
+            utc (astropy.time.Time):
+    """
     met = TimeDelta(trigtime_met, format="sec")
     utc = (met + cg.T0)
     return utc
 
 
 def get_iss_att(trigtime_met, iat_table):
+    """
+        This function get ISS attitude data.
+
+        Args:
+            trigtime_met (float): trigger time in MET
+            iat_table (astropy.table.Table): Table of orbit data
+        Returns:
+            iss2sky (scipy.spatial.transform.Rotation): Rotation matrix from ISS
+            coordinate to the celestial coordinates.
+    """
+
     iat_table['ZTIME'] = iat_table['TIME'] - trigtime_met
+
+    # Find the nearest time stamp
     iat_table['ABS_TIME'] = np.abs(iat_table['TIME'] - trigtime_met)
     nearest_index = np.argmin(iat_table['ABS_TIME'])
+
+    # Geting the quaternion
     qparam = iat_table['QPARAM'][nearest_index]
     iss2sky = R.from_quat(qparam)
     print('Input MET = %.6f' % (trigtime_met))
@@ -253,6 +324,19 @@ def get_iss_att(trigtime_met, iat_table):
 
 
 def get_cgbm_pointing(iss2sky, theta, phi, det):
+    """
+        This function get CGBM pointing directions.
+
+        Args:
+            iss2sky (scipy.spatial.transform.Rotation): Rotation matrix from ISS
+            coordinate to the celestial coordinates.
+            theta (float) : zenith angle [deg]
+            phi (float) : azimuth [deg]
+            det (str): detector name (HXM1/HXM2/SGM)
+        Returns:
+            sky_pos (astropy.coordinates.SkyCoord): Sky position of the direction
+            which was represented by theta and phi in the detector coordinate.
+    """
 
     det = det.upper()
 
@@ -281,6 +365,19 @@ def get_cgbm_pointing(iss2sky, theta, phi, det):
 
 
 def get_cgbm_theta_phi(iss2sky, ra, dec, det):
+    """
+        This function get the incident angle of the direction which is given as ra and dec.
+
+        Args:
+            iss2sky (scipy.spatial.transform.Rotation): Rotation matrix from ISS
+            coordinate to the celestial coordinates.
+            ra (float) : Right Ascension [deg]
+            dec (float) : Declination [deg]
+            det (str): detector name (HXM1/HXM2/SGM)
+        Returns:
+            pos_cgbm_deg ((float, float)): Incident angles (zenith angle [deg], azimuth [deg])
+    """
+
     sky2iss = iss2sky.inv()
     det = det.upper()
 
@@ -306,13 +403,37 @@ def get_cgbm_theta_phi(iss2sky, ra, dec, det):
 
 
 def get_solar_incident_angle(iss2sky, trigtime_met, det):
+    """
+        This function get the incident angle of the direction which is given as ra and dec.
+
+        Args:
+            iss2sky (scipy.spatial.transform.Rotation): Rotation matrix from ISS
+            coordinate to the celestial coordinates
+            trigtime_met (float): trigger time in MET
+            det (str): detector name (HXM1/HXM2/SGM)
+        Returns:
+            pos_cgbm_deg ((float, float)): Incident angles (zenith angle [deg], azimuth [deg]) of the sun
+    """
+
     trigtime_utc = met2utc(trigtime_met)
+
+    # Get solar position
     sun = get_sun(trigtime_utc)
     solar_angle = get_cgbm_theta_phi(iss2sky, sun.ra.deg, sun.dec.deg, det)
     print('%s solar angle (theta, phi) = (%.3f, %.3f)' % (det , solar_angle[0], solar_angle[1]))
     return solar_angle
 
+
 def get_angles(data_dir, fileid, trigtime_met):
+    """
+        This function calculates pointing directions and solar angles and print them.
+
+        Args:
+            data_dir (str): path to the data directory
+            fileid (str): date of the data (yyyymmdd)
+            trigtime_met (float): trigger time in MET
+    """
+
     iat_file = '%s/cgbm_%s.iat' % (data_dir, fileid)
     iat_table = Table.read(iat_file, hdu=1)
     iat_table['TIME'] = iat_table['TIME'] - cg.PERIODIC_HBIN
@@ -325,8 +446,16 @@ def get_angles(data_dir, fileid, trigtime_met):
     solar_sgm = get_solar_incident_angle(iss2sky, trigtime_met, 'SGM')
 
 def process_trigger(data_dir, fileid, trigid, trigtime_met, trigtime_mdc):
-    tmin = -100
-    tmax = 300.
+    """
+        This function make plots and get pointing directions & solar angles.
+
+        Args:
+            data_dir (str): path to the data directory
+            fileid (str): date of the data (yyyymmdd)
+            trigid (int): integer of the trigger time in MDC time
+            trigtime_met (float): trigger time in MET
+            trigtime_mdc (float): trigger time in MDC time
+    """
 
     th_data = get_th_data(data_dir, fileid)
 
@@ -338,10 +467,14 @@ def process_trigger(data_dir, fileid, trigid, trigtime_met, trigtime_mdc):
     # Get the ISS orbit
     plot_orb(data_dir, fileid, trigtime_met)
     trigtime_utc = met2utc(trigtime_met)
+
+    # Printing the triggerID and trigger time
     print('TriggerID: %d' % (trigid))
     print('Trigger Time (MDC): %.6f' % (trigtime_mdc))
     print('Trigger Time (MET): %.6f' % (trigtime_met))
     print('Trigger Time (UT): %s' % (trigtime_utc.isot))
+
+    # Printing the pointing directions and solar angles
     get_angles(data_dir, fileid, trigtime_met)
 
 

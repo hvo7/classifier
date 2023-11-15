@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""
+Script Name: copy_cgbml3.py
+Description: This script get CGBM data from the data server in Aoyama Gakuin University.
+Author: Yuta Kawakubo
+Date: 2023-11-14
+Version: 1.0
+"""
+
 import sys
 import datetime
 import subprocess
@@ -17,6 +25,14 @@ if len(args) < 2:
 fileid = str(args[1]) #yyyymmdd
 
 def main(fileid):
+    """
+        This function executes rsync commands to get CGBM data.
+
+        Args:
+            fileid (str): date of the data (yyyymmdd)
+    """
+
+    # .env is required to set up the environments
     load_dotenv()
     trig_datetime = datetime.datetime.strptime(fileid, '%Y%m%d')
 
@@ -28,6 +44,7 @@ def main(fileid):
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
+    # In the case of we want data of multiple days
     for tdelta in [0] :
         temp_datetime = trig_datetime + datetime.timedelta(days=tdelta)
         temp_year = int(temp_datetime.strftime('%y'))
