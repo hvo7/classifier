@@ -26,6 +26,8 @@ Trigger Time (MDC) = 1383686318.874000
 (venv) ykawakubo@procyon:classify % python ./process_trigger.py
 Usage: python ./process_trigger.py [fileid yyyymmdd] [trigtime_met] [trigtime_mdc]
 
+(venv) ykawakubo@procyon:classify % python ./process_trigger.py 20231110 752966385.210472 1383686318.874000
+
 TriggerID: 1383686318
 Trigger Time (MDC): 1383686318.874000
 Trigger Time (MET): 752966385.210472
