@@ -113,16 +113,17 @@ def main(fileid, chan_type, ref_met):
 
     tmask = (tmin <= ph_table['ZTIME']) & (ph_table['ZTIME'] <= tmax)
     roi = ph_table[tmask]
+    row_num = float(len(roi))
 
     # HXM1H
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
         np.arange(cg.PH_BINNUM_HIGH),
-        np.sum(roi['HXM1H_RATE'], axis=0) / cg.high_ph_width(),
+        np.sum(roi['HXM1H_RATE'], axis=0) / cg.high_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
     plt.xlabel('PH channel')
-    plt.ylabel('Counts / ADC channel')
+    plt.ylabel('Counts /s /ADC channel')
     plt.title('HXM1H spectrum')
     fig.savefig('%s_hxm1h_spec.png' % (fileid))
     plt.show()
@@ -131,11 +132,11 @@ def main(fileid, chan_type, ref_met):
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
         np.arange(cg.PH_BINNUM_HIGH),
-        np.sum(roi['HXM2H_RATE'], axis=0) / cg.high_ph_width(),
+        np.sum(roi['HXM2H_RATE'], axis=0) / cg.high_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
     plt.xlabel('PH channel')
-    plt.ylabel('Counts / ADC channel')
+    plt.ylabel('Counts /s /ADC channel')
     plt.title('HXM2H spectrum')
     fig.savefig('%s_hxm2h_spec.png' % (fileid))
     plt.show()
@@ -144,11 +145,11 @@ def main(fileid, chan_type, ref_met):
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
         np.arange(cg.PH_BINNUM_HIGH),
-        np.sum(roi['SGMH_RATE'], axis=0) / cg.high_ph_width(),
+        np.sum(roi['SGMH_RATE'], axis=0) / cg.high_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
     plt.xlabel('PH channel')
-    plt.ylabel('Counts / ADC channel')
+    plt.ylabel('Counts /s /ADC channel')
     plt.title('SGMH spectrum')
     fig.savefig('%s_sgmh_spec.png' % (fileid))
     plt.show()
@@ -157,11 +158,11 @@ def main(fileid, chan_type, ref_met):
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
         np.arange(cg.PH_BINNUM_LOW),
-        np.sum(roi['HXM1L_RATE'], axis=0) / cg.low_ph_width(),
+        np.sum(roi['HXM1L_RATE'], axis=0) / cg.low_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
     plt.xlabel('PH channel')
-    plt.ylabel('Counts / ADC channel')
+    plt.ylabel('Counts /s /ADC channel')
     plt.title('HXM1L spectrum')
     fig.savefig('%s_hxm1l_spec.png' % (fileid))
     plt.show()
@@ -170,7 +171,7 @@ def main(fileid, chan_type, ref_met):
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
         np.arange(cg.PH_BINNUM_LOW),
-        np.sum(roi['HXM2L_RATE'], axis=0) / cg.low_ph_width(),
+        np.sum(roi['HXM2L_RATE'], axis=0) / cg.low_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
     plt.xlabel('PH channel')
@@ -183,11 +184,11 @@ def main(fileid, chan_type, ref_met):
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
         np.arange(cg.PH_BINNUM_LOW),
-        np.sum(roi['SGML_RATE'], axis=0) / cg.low_ph_width(),
+        np.sum(roi['SGML_RATE'], axis=0) / cg.low_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
     plt.xlabel('PH channel')
-    plt.ylabel('Counts / ADC channel')
+    plt.ylabel('Counts /s /ADC channel')
     plt.title('SGML spectrum')
     fig.savefig('%s_sgml_spec.png' % (fileid))
     plt.show()
