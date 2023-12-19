@@ -87,6 +87,12 @@ def main(fileid, chan_type, ref_met):
 
     load_dotenv()
     data_dir = os.getenv("LOCAL_DATA_DIR")
+
+    if chan_type != 'PI':
+        chan_type = 'PHA'
+        print('Warning: chan_type is not PI.')
+        print('Warning: Energy calibration was not applied.')
+
     ph_table = get_phdata(fileid, data_dir, chan_type)
     ph_table['ZTIME'] = ph_table['TIME'] - cg.PH_HBIN - ref_met
 
@@ -104,8 +110,7 @@ def main(fileid, chan_type, ref_met):
         ax.axvline(x=0, color='red', linestyle='--')
         ax.tick_params(labelsize=14)
         ax.set_ylabel('Counts/s', fontsize=14)
-
-    plt.legend(loc='best')
+        ax.legend(loc='best')
     plt.show()
 
     tmin = float(input("Please input the start time:"))
@@ -118,11 +123,11 @@ def main(fileid, chan_type, ref_met):
     # HXM1H
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
-        np.arange(cg.PH_BINNUM_HIGH),
+        cg.adc2ene_gc('HXM1H', cg.high_ph_center()),
         np.sum(roi['HXM1H_RATE'], axis=0) / cg.high_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
-    plt.xlabel('PH channel')
+    plt.xlabel('Energy [keV]')
     plt.ylabel('Counts /s /ADC channel')
     plt.title('HXM1H spectrum')
     fig.savefig('%s_hxm1h_spec.png' % (fileid))
@@ -131,11 +136,11 @@ def main(fileid, chan_type, ref_met):
     # HXM2H
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
-        np.arange(cg.PH_BINNUM_HIGH),
+        cg.adc2ene_gc('HXM2H', cg.high_ph_center()),
         np.sum(roi['HXM2H_RATE'], axis=0) / cg.high_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
-    plt.xlabel('PH channel')
+    plt.xlabel('Energy [keV]')
     plt.ylabel('Counts /s /ADC channel')
     plt.title('HXM2H spectrum')
     fig.savefig('%s_hxm2h_spec.png' % (fileid))
@@ -144,11 +149,11 @@ def main(fileid, chan_type, ref_met):
     # SGMH
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
-        np.arange(cg.PH_BINNUM_HIGH),
+        cg.adc2ene_gc('SGMH', cg.high_ph_center()),
         np.sum(roi['SGMH_RATE'], axis=0) / cg.high_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
-    plt.xlabel('PH channel')
+    plt.xlabel('Energy [keV]')
     plt.ylabel('Counts /s /ADC channel')
     plt.title('SGMH spectrum')
     fig.savefig('%s_sgmh_spec.png' % (fileid))
@@ -157,37 +162,37 @@ def main(fileid, chan_type, ref_met):
     # HXM1L
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
-        np.arange(cg.PH_BINNUM_LOW),
+        cg.adc2ene_gc('HXM1L', cg.low_ph_center()),
         np.sum(roi['HXM1L_RATE'], axis=0) / cg.low_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
-    plt.xlabel('PH channel')
+    plt.xlabel('Energy [keV]')
     plt.ylabel('Counts /s /ADC channel')
     plt.title('HXM1L spectrum')
     fig.savefig('%s_hxm1l_spec.png' % (fileid))
     plt.show()
 
-    # HXM2H
+    # HXM2L
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
-        np.arange(cg.PH_BINNUM_LOW),
+        cg.adc2ene_gc('HXM2L', cg.low_ph_center()),
         np.sum(roi['HXM2L_RATE'], axis=0) / cg.low_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
-    plt.xlabel('PH channel')
+    plt.xlabel('Energy [keV]')
     plt.ylabel('Counts / ADC channel')
     plt.title('HXM2L spectrum')
     fig.savefig('%s_hxm2l_spec.png' % (fileid))
     plt.show()
 
-    # SGMH
+    # SGML
     fig = plt.figure(figsize=(8, 6))
     plt.plot(
-        np.arange(cg.PH_BINNUM_LOW),
+        cg.adc2ene_gc('SGML', cg.low_ph_center()),
         np.sum(roi['SGML_RATE'], axis=0) / cg.low_ph_width() / row_num,
         drawstyle='steps-mid')
     plt.yscale('log')
-    plt.xlabel('PH channel')
+    plt.xlabel('Energy [keV]')
     plt.ylabel('Counts /s /ADC channel')
     plt.title('SGML spectrum')
     fig.savefig('%s_sgml_spec.png' % (fileid))

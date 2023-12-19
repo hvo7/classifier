@@ -1,7 +1,7 @@
 Description: This plaintext shows the usage of Python scripts.
 Author: Yuta Kawakubo
 Date: 2023-11-14
-Last Update: 2023-12-18
+Last Update: 2023-12-19
 
 # How to get cgbm data
 You need to create .env file to define the environments (REMOTE_HOST, REMOTE_USER, REMOTE_DIR,
@@ -183,4 +183,12 @@ HXM solar angle (theta, phi) = (133.430, 338.304)
 SGM solar angle (theta, phi) = (142.579, 333.780)
 Do you want to exit? (Yes=1, No=0): 1
 
+# How to make spectra
+(venv) ykawakubo@procyon:classify % python ./make_spectrum.py
+Usage: python ./make_spectrum.py fileid(yyyymmdd) chan_type(PHA/PI) ref_met(offset MET)
 
+(venv) ykawakubo@procyon:classify % python ./make_spectrum.py 20231110 PHA 752966385.210472
+Warning: chan_type is not PI.
+Warning: Energy calibration was not applied.
+Please input the start time:-1200
+Please input the end time:1200
