@@ -190,5 +190,5 @@ Usage: python ./make_spectrum.py fileid(yyyymmdd) chan_type(PHA/PI) ref_met(offs
 (venv) ykawakubo@procyon:classify % python ./make_spectrum.py 20231110 PHA 752966385.210472
 Warning: chan_type is not PI.
 Warning: Energy calibration was not applied.
-Please input the start time:-1200
-Please input the end time:1200
+Please input the start time:-500
+Please input the end time:500
