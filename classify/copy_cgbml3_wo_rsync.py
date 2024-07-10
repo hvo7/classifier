@@ -3,7 +3,7 @@
 
 """
 Script Name: copy_cgbml3_wo_rsync.py
-Description: This script get CGBM data from the data server in Aoyama Gakuin University.
+Description: This script get CGBM data from the data server in Aoyama Gakuin University. Compatible with Windows
 Author: Yuta Kawakubo
 Date: 2023-12-15
 Version: 1.0

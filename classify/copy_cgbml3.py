@@ -3,7 +3,7 @@
 
 """
 Script Name: copy_cgbml3.py
-Description: This script get CGBM data from the data server in Aoyama Gakuin University.
+Description: This script get CGBM data from the data server in Aoyama Gakuin University. Compatible with Linux 
 Author: Yuta Kawakubo
 Date: 2023-11-14
 Version: 1.0
