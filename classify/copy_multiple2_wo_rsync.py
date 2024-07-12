@@ -28,7 +28,7 @@ from math import trunc
 
 def main():
 
-    load_dotenv()     # .env is required to set up the environments
+    load_dotenv()     # .env is required to set up the environments, load environment variables
 
     # Open summary file
     global summary_file_name, summary_file, psummary
