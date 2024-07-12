@@ -22,7 +22,6 @@ import datetime
 from dotenv import load_dotenv
 import os
 import paramiko
-import astropy
 from astropy.table import Table
 import cgutil as cg
 from math import trunc
@@ -42,7 +41,7 @@ def main():
     d2 = now.strftime("%Y%m%d_%H%M%S")
     psummary = 0
 
-    copy(20221231,1)	#	PART
+    copy(20240602,1)	#	PART
 
 # Job duration
     duration = d2.split("_")                    # Job start time
