@@ -203,6 +203,10 @@ def analyze39 (fileid, chan_type, tmin, tmax):
 
 #    global tmin, tmax
 #    global summary_file, summary_file_name
+
+
+
+    # Declare global variables
     global data_types, event_classes, max_rows, max_bins
     global xL, Ngtx
 
@@ -265,31 +269,39 @@ def analyze39 (fileid, chan_type, tmin, tmax):
 
 # Read in likelihood tables -- new version
 
+    # Declare local variables
     global data_types, event_classes, midpoints, likelihood
+
+    # Input the file
     likelihood_fileid = '20240602'	# file name for likelihood data; this can be changed if necessary
     input_file_name = "ranking_" + likelihood_fileid + ".txt"
-    #print(likelihood_fileid)
 	
+    # Data types
     data_types = ['Latitude','Time_to_transition','Solar_angle','Gaussian_FWHM','Gaussian_Amplitude', 'Gaussian_Chi-sq','Norris_t90',
-        'Norris_Amplitude', 'Norris_Chi-sq', 'Hardness_ratio', 'GOES', 'GOES_variance', 'GOES_avg_1hr', 'GOES_var_1hr']				# Data types
-    event_classes = ['GRB', 'Solar','Particle']				# Event classes
+        'Norris_Amplitude', 'Norris_Chi-sq', 'Hardness_ratio', 'GOES', 'GOES_variance', 'GOES_avg_1hr', 'GOES_var_1hr']				
+    
+    # Event classes
+    event_classes = ['GRB', 'Solar','Particle']				
 
-
+    # Open the file and read the data
     lhood_input = open ( input_file_name, 'r')
-    lines = len(lhood_input.readlines())  		# Determine length of file
-    lhood_input.seek(0)					# Rewind to beginning
-    max_bins = int((lines - 1)/len(data_types))	- 1	# Number of histogram bins must be the same for all data types
+    lines = len(lhood_input.readlines())  		            # Determine length of file
+    lhood_input.seek(0)					                    # Rewind to beginning
+    max_bins = int((lines - 1)/len(data_types))	- 1	        # Number of histogram bins must be the same for all data types
 
     likelihood = [[ [0 for row in range(max_bins)] for col in range(len(event_classes))] for type in range(len(data_types))]
     midpoints = [[ 0 for bin_num in range(max_bins)] for type in range(len(data_types))]
 
-    data = lhood_input.readline().strip()			# Skip header in first line of input file				
-
+    # Read the data for each data type in data_types
     for type in range (len(data_types)):
         category = []  
-        data = lhood_input.readline().strip()			# Read data type				
+        data = lhood_input.readline().strip()			# Read data type	
+
+
         category = data.split()	
-        if category [0] != data_types [type]:
+
+        
+        if category [0] != data_types[type]:
             print ('Wrong data type: ', category[0])
             sys.exit()
         for bin in range (max_bins):
@@ -300,7 +312,6 @@ def analyze39 (fileid, chan_type, tmin, tmax):
             likelihood [type] [0] [bin] = category [1]
             likelihood [type] [1] [bin] = category [2]
             likelihood [type] [2] [bin] = category [3]
-#            print (midpoints [type] [bin], likelihood [type] [index] [bin] for index in range (3))
 
 ################################
 # Read in event list with previous characterizations.
