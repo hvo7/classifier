@@ -296,14 +296,14 @@ def analyze39 (fileid, chan_type, tmin, tmax):
     for type in range (len(data_types)):
         category = []  
         data = lhood_input.readline().strip()			# Read data type	
-
-
+        data = lhood_input.readline()                   # Skip to second line
         category = data.split()	
 
         
         if category [0] != data_types[type]:
             print ('Wrong data type: ', category[0])
             sys.exit()
+
         for bin in range (max_bins):
             category = []
             data = lhood_input.readline().strip()		# Read data 				
@@ -312,6 +312,7 @@ def analyze39 (fileid, chan_type, tmin, tmax):
             likelihood [type] [0] [bin] = category [1]
             likelihood [type] [1] [bin] = category [2]
             likelihood [type] [2] [bin] = category [3]
+
 
 ################################
 # Read in event list with previous characterizations.

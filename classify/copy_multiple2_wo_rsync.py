@@ -41,7 +41,7 @@ def main():
     d2 = now.strftime("%Y%m%d_%H%M%S")
     psummary = 0
 
-    copy(20240602,1)	#	PART
+    copy(20230602,1)	#	PART
 
 # Job duration
     duration = d2.split("_")                    # Job start time
